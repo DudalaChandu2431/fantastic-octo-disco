@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Restaurant Details</title>
+    <meta name="description" content="Delicious Food Delivered Fast. Order online via our modern platform.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="logo-container">
+                <span id="restaurant-name" class="dynamic-name">The Indian Spice</span>
+                <button id="edit-name-btn" title="Edit Restaurant Name"><i class="fas fa-edit"></i></button>
+                <div id="edit-name-container" class="hidden">
+                    <input type="text" id="name-input" maxlength="25">
+                    <button id="save-name-btn"><i class="fas fa-check"></i></button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-center">
+            <div class="search-bar">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="search-input" placeholder="Search for dishes, categories...">
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <a href="#partners" class="nav-link hidden-mobile">Partners</a>
+            <div class="cart-icon" onclick="toggleCart()" aria-label="Open Cart">
+                <i class="fas fa-shopping-bag"></i>
+                <span class="cart-text">Cart</span>
+                <span id="cart-count">0</span>
+            </div>
+            <div class="user-icon hidden-mobile">
+                <i class="far fa-user"></i>
+                <span>Sign In</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Search Bar (Visible only on small screens) -->
+    <div class="mobile-search">
+        <div class="search-bar">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="mobile-search-input" placeholder="Search for dishes...">
+        </div>
+    </div>
+
+    <!-- Hero Banner -->
+    <header id="home" class="hero">
+        <div class="hero-content">
+            <h1>Delicious Food Delivered <span class="highlight">Fast</span></h1>
+            <p>Experience the best Indian cuisine, crafted with love and authentic spices.</p>
+            <div class="hero-buttons">
+                <a href="#menu" class="btn btn-primary">Order Now</a>
+                <a href="#menu" class="btn btn-secondary">View Menu</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="hero.png" alt="Indian Food Banner">
+        </div>
+    </header>
+
+    <!-- Delivery Partners -->
+    <section id="partners" class="delivery-partners">
+        <h3>Also available on</h3>
+        <div class="partner-cards">
+            <a href="https://www.zomato.com" target="_blank" class="partner-card zomato">
+                <div class="partner-logo">Z</div>
+                <span>Order via Zomato</span>
+            </a>
+            <a href="https://www.swiggy.com" target="_blank" class="partner-card swiggy">
+                <div class="partner-logo">S</div>
+                <span>Order via Swiggy</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Popular Dishes Section -->
+    <section id="popular" class="popular-section">
+        <div class="section-title">
+            <h2>Popular Dishes</h2>
+            <p>Our most loved signatures</p>
+        </div>
+        <div class="carousel-container" id="popular-container">
+            <!-- Popular items dynamically injected -->
+        </div>
+    </section>
+
+    <!-- Main Menu Section -->
+    <section id="menu" class="menu-section">
+        <div class="section-title">
+            <h2>Explore Menu</h2>
+        </div>
+        
+        <div class="menu-layout">
+            <!-- Sidebar Filters -->
+            <aside class="menu-filters">
+                <h3>Filters</h3>
+                <div class="filter-group">
+                    <label class="custom-radio">
+                        <input type="radio" name="diet" value="all" checked>
+                        <span class="radio-mark"></span>
+                        All Items
+                    </label>
+                    <label class="custom-radio">
+                        <input type="radio" name="diet" value="veg">
+                        <span class="radio-mark"></span>
+                        <span class="diet-icon veg"></span> Veg Only
+                    </label>
+                    <label class="custom-radio">
+                        <input type="radio" name="diet" value="non-veg">
+                        <span class="radio-mark"></span>
+                        <span class="diet-icon non-veg"></span> Non-Veg Only
+                    </label>
+                </div>
+            </aside>
+
+            <!-- Menu Grid -->
+            <div class="menu-main">
+                <div id="no-results" class="hidden">
+                    <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-state-2130362-1800926.png" alt="No food found" style="max-width: 200px;">
+                    <h3>No dishes found</h3>
+                    <p>Try searching for something else.</p>
+                </div>
+                <div class="menu-grid" id="menu-container">
+                    <!-- Menu Items dynamically rendered -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h2 id="footer-restaurant-name" class="dynamic-name">The Indian Spice</h2>
+                <p>Authentic flavors delivered to your doorstep.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Contact</h3>
+                <p>Help & Support</p>
+                <p>Partner with us</p>
+            </div>
+            <div class="footer-col">
+                <h3>Legal</h3>
+                <p>Terms & Conditions</p>
+                <p>Privacy Policy</p>
+            </div>
+            <div class="footer-col social-links">
+                <h3>Follow Us</h3>
+                <div>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div class="overlay" id="overlay"></div>
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <button class="close-btn" onclick="toggleCart()">&times;</button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <!-- Items injected here by JS -->
+            <div class="empty-cart-msg">
+                <img src="https://cdni.iconscout.com/illustration/free/thumb/empty-cart-4085814-3385483.png" alt="Empty Cart">
+                <p>Your cart is empty. Add some delicious food!</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="bill-details hidden" id="bill-details">
+                <div class="bill-row">
+                    <span>Item Total</span>
+                    <span id="item-total">₹0</span>
+                </div>
+                <div class="bill-row">
+                    <span>Delivery Fee</span>
+                    <span>₹40</span>
+                </div>
+                <div class="bill-row total">
+                    <span>To Pay</span>
+                    <span id="grand-total">₹0</span>
+                </div>
+            </div>
+            <button class="checkout-btn disabled" id="checkout-btn" onclick="checkout()">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Order Success Modal -->
+    <div class="success-modal" id="success-modal">
+        <div class="success-content">
+            <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+            <h2>Order Placed Successfully!</h2>
+            <p>Your delicious food is being prepared and will be delivered fast.</p>
+            <button class="btn btn-primary" onclick="closeSuccessModal()">Track Order</button>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div id="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
