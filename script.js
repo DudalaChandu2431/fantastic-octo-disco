@@ -1,5 +1,7 @@
 // Initial Menu Data
-const menuData = [
+let menuData = JSON.parse(localStorage.getItem("restaurant_menu"));
+if (!menuData) {
+    menuData = [
     {
         id: "m1",
         name: "Butter Chicken",
@@ -88,12 +90,15 @@ const menuData = [
         description: "Chicken marinated in yogurt and spices, roasted perfectly in a traditional clay oven.",
         image: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?q=80&w=400&auto=format&fit=crop"
     }
-];
+    ];
+    localStorage.setItem("restaurant_menu", JSON.stringify(menuData));
+}
 
 // App State
 let cart = JSON.parse(localStorage.getItem("restaurant_cart")) || {};
 let currentSearch = "";
 let currentFilter = "all";
+let isAdmin = localStorage.getItem("restaurant_admin") === "true";
 
 // Elements
 const domNameElements = document.querySelectorAll(".dynamic-name");
@@ -119,6 +124,7 @@ const checkoutBtn = document.getElementById("checkout-btn");
 
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
+    updateAdminUI();
     loadRestaurantName();
     renderPopularDishes();
     renderMenu();
@@ -223,6 +229,7 @@ function renderMenu() {
         filteredMenu.forEach(item => {
             const card = document.createElement("div");
             card.className = "dish-card";
+            card.style.position = "relative";
             
             // Render quantity controls if item in cart, else Add button
             const qtyInCart = cart[item.id] ? cart[item.id].quantity : 0;
@@ -242,7 +249,18 @@ function renderMenu() {
                 `;
             }
 
+            let adminControls = "";
+            if (isAdmin) {
+                adminControls = `
+                    <div class="admin-controls" style="position: absolute; top: 10px; left: 10px; z-index: 10; display:flex; gap: 5px;">
+                        <button onclick="openItemModal('${item.id}')" style="background:#fbbf24; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteItem('${item.id}')" style="background:#ef4444; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;" title="Delete"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+            }
+
             card.innerHTML = `
+                ${adminControls}
                 <div class="dish-details">
                     <div class="dish-header">
                         <span class="diet-icon ${item.category}"></span>
@@ -380,4 +398,128 @@ function showToast(message) {
             toast.remove();
         }
     }, 3000);
+}
+
+// ---------------- Admin Features ----------------
+
+function toggleLogin() {
+    if (isAdmin) {
+        // Logout
+        isAdmin = false;
+        localStorage.setItem("restaurant_admin", "false");
+        showToast("Logged out successfully");
+    } else {
+        // Mock Login
+        const password = prompt("Enter Admin Password (hint: admin123):");
+        if (password === "admin123") {
+            isAdmin = true;
+            localStorage.setItem("restaurant_admin", "true");
+            showToast("Logged in as Admin");
+        } else if (password !== null) {
+            showToast("Incorrect password!");
+        }
+    }
+    updateAdminUI();
+    renderMenu();
+}
+
+function updateAdminUI() {
+    const adminBadge = document.getElementById("admin-badge");
+    const loginText = document.getElementById("login-text");
+    const loginBtnIcon = document.querySelector("#login-btn i");
+    const addItemBtn = document.getElementById("add-item-btn");
+    
+    if (isAdmin) {
+        if(adminBadge) adminBadge.classList.remove("hidden");
+        if(loginText) loginText.textContent = "Logout";
+        if(loginBtnIcon) { loginBtnIcon.classList.remove("fa-user"); loginBtnIcon.classList.add("fa-sign-out-alt"); }
+        if(addItemBtn) addItemBtn.classList.remove("hidden");
+    } else {
+        if(adminBadge) adminBadge.classList.add("hidden");
+        if(loginText) loginText.textContent = "Sign In";
+        if(loginBtnIcon) { loginBtnIcon.classList.remove("fa-sign-out-alt"); loginBtnIcon.classList.add("fa-user"); }
+        if(addItemBtn) addItemBtn.classList.add("hidden");
+    }
+}
+
+function openItemModal(id = null) {
+    document.getElementById("item-modal").classList.add("active");
+    if (id) {
+        const item = menuData.find(i => i.id === id);
+        if (item) {
+            document.getElementById("item-modal-title").textContent = "Edit Dish";
+            document.getElementById("item-id").value = item.id;
+            document.getElementById("item-name").value = item.name;
+            document.getElementById("item-price").value = item.price;
+            document.getElementById("item-category").value = item.category;
+            document.getElementById("item-desc").value = item.description;
+            // Provide a way to change image, using placeholder for mock
+            document.getElementById("item-image").value = item.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=400&auto=format&fit=crop";
+        }
+    } else {
+        document.getElementById("item-modal-title").textContent = "Add New Dish";
+        document.getElementById("item-id").value = "";
+        document.getElementById("item-name").value = "";
+        document.getElementById("item-price").value = "";
+        document.getElementById("item-category").value = "veg";
+        document.getElementById("item-desc").value = "";
+        document.getElementById("item-image").value = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=400&auto=format&fit=crop";
+    }
+}
+
+function closeItemModal() {
+    document.getElementById("item-modal").classList.remove("active");
+}
+
+function saveItem() {
+    const id = document.getElementById("item-id").value;
+    const name = document.getElementById("item-name").value.trim();
+    const price = parseInt(document.getElementById("item-price").value) || 0;
+    const category = document.getElementById("item-category").value;
+    const desc = document.getElementById("item-desc").value.trim();
+    const image = document.getElementById("item-image").value.trim();
+
+    if (!name || !price || !image) {
+        showToast("Please fill all required fields!");
+        return;
+    }
+
+    if (id) {
+        // Edit existing
+        const index = menuData.findIndex(i => i.id === id);
+        if (index !== -1) {
+            menuData[index] = { ...menuData[index], name, price, category, description: desc, image };
+            showToast("Dish updated successfully");
+        }
+    } else {
+        // Add new
+        const newItem = {
+            id: "m" + Date.now(),
+            name,
+            price,
+            category,
+            rating: 4.8, 
+            ratingCount: "New",
+            bestseller: false,
+            description: desc,
+            image
+        };
+        menuData.push(newItem);
+        showToast("Dish added successfully");
+    }
+
+    localStorage.setItem("restaurant_menu", JSON.stringify(menuData));
+    closeItemModal();
+    renderMenu();
+    renderPopularDishes();
+}
+
+function deleteItem(id) {
+    if (confirm("Are you sure you want to delete this dish?")) {
+        menuData = menuData.filter(i => i.id !== id);
+        localStorage.setItem("restaurant_menu", JSON.stringify(menuData));
+        showToast("Dish deleted");
+        renderMenu();
+        renderPopularDishes();
+    }
 }

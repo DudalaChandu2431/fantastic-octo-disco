@@ -39,9 +39,13 @@
                 <span class="cart-text">Cart</span>
                 <span id="cart-count">0</span>
             </div>
-            <div class="user-icon hidden-mobile">
+            <div id="admin-badge" class="admin-badge hidden">
+                <i class="fas fa-shield-alt"></i>
+                <span>Admin</span>
+            </div>
+            <div class="user-icon hidden-mobile" id="login-btn" onclick="toggleLogin()">
                 <i class="far fa-user"></i>
-                <span>Sign In</span>
+                <span id="login-text">Login</span>
             </div>
         </div>
     </nav>
@@ -99,6 +103,7 @@
     <section id="menu" class="menu-section">
         <div class="section-title">
             <h2>Explore Menu</h2>
+            <button id="add-item-btn" class="btn btn-primary hidden" onclick="openItemModal()" style="margin-top: 1rem;">+ Add Dish</button>
         </div>
         
         <div class="menu-layout">
@@ -206,6 +211,47 @@
             <h2>Order Placed Successfully!</h2>
             <p>Your delicious food is being prepared and will be delivered fast.</p>
             <button class="btn btn-primary" onclick="closeSuccessModal()">Track Order</button>
+        </div>
+    </div>
+
+    <!-- Admin Item Edit Modal -->
+    <div class="success-modal" id="item-modal">
+        <div class="success-content" style="text-align: left; max-width: 400px; padding: 2rem;">
+            <h2 id="item-modal-title" style="margin-bottom: 1.5rem;">Add New Dish</h2>
+            <input type="hidden" id="item-id">
+            
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="display:block; margin-bottom: 0.5rem; color: var(--text-dark); font-weight: 500;">Dish Name</label>
+                <input type="text" id="item-name" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="display:block; margin-bottom: 0.5rem; color: var(--text-dark); font-weight: 500;">Price (₹)</label>
+                <input type="number" id="item-price" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="display:block; margin-bottom: 0.5rem; color: var(--text-dark); font-weight: 500;">Category</label>
+                <select id="item-category" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px;">
+                    <option value="veg">Veg</option>
+                    <option value="non-veg">Non-Veg</option>
+                </select>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="display:block; margin-bottom: 0.5rem; color: var(--text-dark); font-weight: 500;">Description</label>
+                <textarea id="item-desc" rows="3" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; resize: none;"></textarea>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label style="display:block; margin-bottom: 0.5rem; color: var(--text-dark); font-weight: 500;">Image URL</label>
+                <input type="text" id="item-image" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-primary" style="flex: 1;" onclick="saveItem()">Save</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeItemModal()">Cancel</button>
+            </div>
         </div>
     </div>
 
